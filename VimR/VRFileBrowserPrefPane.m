@@ -7,6 +7,7 @@
 * See LICENSE
 */
 
+#import <PureLayout/ALView+PureLayout.h>
 #import "VRFileBrowserPrefPane.h"
 #import "VRUserDefaults.h"
 #import "VRUtils.h"
@@ -61,7 +62,7 @@ NSString *const qOpenInHorizontalSplitDescription = @"Opens in a horizontal spli
   NSTextField *fbbDescription = [self newDescriptionLabelWithString:@"These are default values, ie new windows will start with these values set:\n– The changes will only affect new windows.\n– You can override these settings in each window."
                                                           alignment:NSLeftTextAlignment];
 
-  NSTextField *filterTitle = [self newTextLabelWithString:@"Filtering" alignment:NSRightTextAlignment];
+  NSTextField *filterTitle = [self newTextLabelWithString:@"Filtering:" alignment:NSRightTextAlignment];
   NSButton *filterButton = [self checkButtonWithTitle:@"Hide files matching 'wildignore' of Vim" defaultKey:qDefaultFileBrowserHideWildignore];
   NSTextField *filterDescription = [self newDescriptionLabelWithString:@"Example: 'set wildignore=*.o,*.obj,.DS_Store' in ~/.vimrc" alignment:NSLeftTextAlignment];
 
@@ -115,19 +116,16 @@ NSString *const qOpenInHorizontalSplitDescription = @"Opens in a horizontal spli
   };
 
   for (NSView *view in @[domTitle, filterTitle, noModifierTitle, cmdTitle, optTitle, ctrlTitle]) {
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:view
-                                                     attribute:NSLayoutAttributeTrailing
-                                                     relatedBy:NSLayoutRelationEqual
-                                                        toItem:fbbTitle
-                                                     attribute:NSLayoutAttributeTrailing
-                                                    multiplier:1 constant:0]];
+    [view autoAlignAxis:ALAxisVertical toSameAxisOfView:fbbTitle];
   }
 
   for (NSView *view in views.allValues) {
     [view setContentHuggingPriority:NSLayoutPriorityDefaultLow forOrientation:NSLayoutConstraintOrientationHorizontal];
   }
 
-  CONSTRAIN(@"H:|-[fbbTitle]-[showFoldersFirst]-|");
+  [fbbTitle autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+  [showFoldersFirstButton autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:fbbTitle withOffset:20]; // FIXME std distance?
+  [showFoldersFirstButton autoPinEdgeToSuperviewEdge:ALEdgeRight];
   CONSTRAIN(@"H:|-[fbbTitle]-[showHidden]-|");
   CONSTRAIN(@"H:|-[fbbTitle]-[syncWorkingDir]-|");
   CONSTRAIN(@"H:|-[fbbTitle]-[fbbDesc]-|");
